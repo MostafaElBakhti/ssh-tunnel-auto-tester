@@ -1,0 +1,26 @@
+# Core SSH and networking
+paramiko>=3.0.0
+requests>=2.31.0
+PySocks>=1.7.1
+websocket-client>=1.6.0
+dnspython>=2.4.0
+
+# Network analysis (optional - graceful degradation if not available)
+# scapy>=2.5.0
+
+# Terminal/UI
+colorama>=0.4.6
+
+# Configuration
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Security/Cryptography
+cryptography>=41.0.0
+
+# System monitoring
+psutil>=5.9.0
+
+# Async support
+asyncio-throttle>=1.0.2
+aiohttp>=3.9.0
