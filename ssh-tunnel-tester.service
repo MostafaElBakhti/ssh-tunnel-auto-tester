@@ -1,0 +1,56 @@
+[Unit]
+Description=SSH Tunnel Auto-Tester Service
+Documentation=https://github.com/your-repo/ssh-tunnel-auto-tester
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tunnel
+Group=tunnel
+
+# Working directory
+WorkingDirectory=/opt/ssh-tunnel-auto-tester
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=PATH=/opt/ssh-tunnel-auto-tester/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Main command - find working method and maintain connection
+ExecStart=/opt/ssh-tunnel-auto-tester/venv/bin/python \
+    /opt/ssh-tunnel-auto-tester/tunnel_tester.py \
+    --config /opt/ssh-tunnel-auto-tester/config.yaml \
+    --find-and-connect
+
+# Restart policy
+Restart=on-failure
+RestartSec=30
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+
+# Allow network access
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# Read-write paths
+ReadWritePaths=/opt/ssh-tunnel-auto-tester/logs
+ReadWritePaths=/opt/ssh-tunnel-auto-tester/.cache.json
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ssh-tunnel-tester
+
+[Install]
+WantedBy=multi-user.target

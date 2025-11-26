@@ -1,0 +1,147 @@
+# SSH Tunnel Auto-Tester Configuration
+# Copy this file to config.yaml and edit with your settings
+# WARNING: Never commit config.yaml with real credentials to version control!
+
+# =====================================================================
+# SSH ACCOUNTS - Add your SSH server credentials here
+# =====================================================================
+ssh_accounts:
+  - host: "your-ssh-server.com"
+    port: 22
+    username: "your_username"
+    # Use password OR key_file (not both)
+    password: "your_password"
+    key_file: null  # e.g., "/home/user/.ssh/id_rsa"
+
+  # Additional accounts (optional)
+  # - host: "backup-server.com"
+  #   port: 22
+  #   username: "backup_user"
+  #   password: null
+  #   key_file: "/path/to/private_key"
+
+# =====================================================================
+# TEST MODES - Connection methods to test (in order of priority)
+# =====================================================================
+test_modes:
+  - direct           # Direct SSH connection (standard)
+  - websocket        # SSH over WebSocket protocol
+  - ssl_wrap         # SSH wrapped in SSL/TLS
+  - http_tunnel      # SSH through HTTP CONNECT proxy
+  - sni_spoof        # SNI spoofing with fake host headers
+  - dns_tunnel       # Tunnel through DNS queries (advanced)
+  - obfuscated       # Traffic obfuscation methods
+
+# =====================================================================
+# PORTS TO TEST - Common ports that may be unrestricted
+# =====================================================================
+ports_to_test:
+  - 22     # Standard SSH
+  - 80     # HTTP (often unrestricted)
+  - 443    # HTTPS (often unrestricted)
+  - 8080   # Alternative HTTP
+  - 8443   # Alternative HTTPS
+  - 2082   # cPanel HTTP
+  - 2083   # cPanel HTTPS
+  - 2086   # WHM HTTP
+  - 2087   # WHM HTTPS
+  - 2095   # Webmail HTTP
+  - 2096   # Webmail HTTPS
+
+# =====================================================================
+# SNI DOMAINS - Domains to use for SNI spoofing
+# These should be popular domains that are likely unrestricted
+# =====================================================================
+sni_domains:
+  - "www.google.com"
+  - "www.facebook.com"
+  - "www.microsoft.com"
+  - "www.cloudflare.com"
+  - "www.akamai.com"
+  - "www.amazon.com"
+  - "www.apple.com"
+  - "www.netflix.com"
+
+# =====================================================================
+# CONNECTION SETTINGS
+# =====================================================================
+timeout: 10               # Connection timeout in seconds
+retry_attempts: 3         # Number of retry attempts per method
+max_threads: 5            # Maximum concurrent test threads
+connection_delay: 1       # Delay between connection attempts (seconds)
+
+# =====================================================================
+# LOGGING & OUTPUT
+# =====================================================================
+log_file: "tunnel_results.log"   # Log file path
+log_level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+verbose: false                    # Enable verbose output
+quiet: false                      # Suppress non-essential output
+colorize: true                    # Use colored output
+
+# =====================================================================
+# AUTO-CONNECT SETTINGS
+# =====================================================================
+auto_connect: true          # Auto-connect when working method found
+keep_alive: true            # Send keep-alive packets
+keep_alive_interval: 60     # Keep-alive interval in seconds
+auto_reconnect: true        # Auto-reconnect on disconnect
+max_reconnect_attempts: 5   # Maximum reconnection attempts
+
+# =====================================================================
+# PERFORMANCE TUNING
+# =====================================================================
+compression: true           # Enable SSH compression
+preferred_ciphers:          # Preferred ciphers (in order of preference)
+  - "aes256-gcm@openssh.com"
+  - "aes128-gcm@openssh.com"
+  - "aes256-ctr"
+  - "aes128-ctr"
+tcp_nodelay: true          # Disable Nagle's algorithm for lower latency
+
+# =====================================================================
+# PROXY SETTINGS (Optional)
+# =====================================================================
+proxy:
+  enabled: false
+  type: "socks5"           # socks4, socks5, http, https
+  host: "127.0.0.1"
+  port: 1080
+  username: null           # Optional proxy authentication
+  password: null
+
+# =====================================================================
+# ADVANCED SETTINGS
+# =====================================================================
+# Circuit breaker - pause after consecutive failures
+circuit_breaker:
+  enabled: true
+  failure_threshold: 5     # Failures before pause
+  pause_duration: 30       # Pause duration in seconds
+
+# Cache successful methods for faster future connections
+cache:
+  enabled: true
+  file: ".cache.json"
+  max_age: 86400           # Cache validity in seconds (24 hours)
+
+# Network detection
+network_detection:
+  enabled: true
+  detect_mobile: true      # Detect if on mobile/4G network
+  adapt_strategy: true     # Adapt testing strategy based on network
+
+# Speed test settings
+speed_test:
+  enabled: true
+  test_size: 10240         # Test data size in bytes
+  min_speed: 1024          # Minimum acceptable speed (bytes/sec)
+
+# =====================================================================
+# EXPORT SETTINGS
+# =====================================================================
+export:
+  format: "json"           # json, csv
+  file: "results.json"
+  include_timestamps: true
+  include_metrics: true
