@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  tunnel-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssh-tunnel-tester
+    
+    # Mount configuration file
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./results:/app/results
+      - ./logs:/app/logs
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_FILE=/app/logs/tunnel_results.log
+    
+    # Network mode - use host network for full functionality
+    # Uncomment if you need direct network access
+    # network_mode: host
+    
+    # Default command
+    command: ["--auto", "--config", "/app/config.yaml"]
+    
+    # Restart policy
+    restart: "no"
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # Interactive shell for debugging
+  tunnel-shell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssh-tunnel-shell
+    
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./results:/app/results
+      - ./logs:/app/logs
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+    
+    # Override entrypoint for shell access
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    
+    profiles:
+      - debug
+
+# Named volumes for persistent storage
+volumes:
+  results:
+  logs:
